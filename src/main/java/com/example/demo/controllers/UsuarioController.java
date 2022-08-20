@@ -28,7 +28,7 @@ import com.example.demo.services.UsuarioService;
 @RestController
 @RequestMapping("/usuarios")
 @SuppressWarnings({ "unchecked", "rawtypes" })
-@CrossOrigin
+@CrossOrigin("*")
 public class UsuarioController {
 
 	@Autowired
@@ -50,7 +50,7 @@ public class UsuarioController {
 		return respuesta(true,null,usuario,"usuario",HttpStatus.OK);
 	}
 	
-	@PostMapping
+	@PostMapping("/crear")
 	public ResponseEntity<?>  crear (@RequestBody @Valid Usuario usuario,BindingResult result){
 		if(result.hasErrors())
 			return procesarErrores(result);
