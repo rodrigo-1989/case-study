@@ -33,10 +33,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
+		
 		.antMatchers(HttpMethod.GET,"/productos","/productos/{id}").permitAll()
 		.antMatchers(HttpMethod.POST,"/usuarios/crear").permitAll()
 		.antMatchers(HttpMethod.POST,"/cloudinary/**").authenticated()
-		.antMatchers(HttpMethod.DELETE,"/cloudinary/**").authenticated()
+		.antMatchers(HttpMethod.DELETE,"/cloudinary/**").hasRole("ADMIN")
 //		.antMatchers(HttpMethod.POST,"/productos").hasRole("ADMIN")
 		.antMatchers(HttpMethod.POST,"/productos").authenticated()
 		.antMatchers(HttpMethod.PUT,"/productos/{id}").hasRole("ADMIN")
@@ -44,7 +45,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 		.antMatchers(HttpMethod.PUT,"/productos/compraTienda").hasRole("ADMIN")
 		.antMatchers(HttpMethod.PUT,"/usuarios/{id}").hasAnyRole("ADMIN","USER")
 		.antMatchers(HttpMethod.DELETE,"/productos/{id}","/usuarios/{id}").hasRole("ADMIN")
-		.anyRequest().authenticated();
+		.anyRequest().authenticated()
+		.and().formLogin().loginPage("/oauth/token").permitAll();
+		
 //		.and().cors().configurationSource(corsConfigurationSource());	
 	}
 

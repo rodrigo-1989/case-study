@@ -46,24 +46,41 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public RespuestaDto crear(Producto producto) {
+		RespuestaDto response = new RespuestaDto();
 		Producto p = repository.findByNombre(producto.getNombre());
-		producto.setImagen(noProductoUrl);
+		producto.setImagen( producto.getImagen() == null ?  noProductoUrl: producto.getImagen());
 		producto.setExistentes((producto.getExistentes() > 0) ? producto.getExistentes() : 0);
-		return (p == null) ? new RespuestaDto(true, "Producto creado con exito!", repository.save(producto))
-				: new RespuestaDto(false, "El producto ya existe en BD");
+		
+		if(p == null ) {
+			Producto pn = repository.save(producto);
+			iRepository.save(new Imagen(pn.getNombre()+".jpeg",pn.getImagen(),noProductoId,null,pn.getId()));
+			response.setOk(true);
+			response.setMensaje( "Producto creado con exito!");
+			response.setProducto(pn);
+		}else {	
+			response.setOk(false);
+			response.setMensaje("El producto ya existe en BD");
+		}
+		return response;
+		
 	}
 
 	@Override
 	public RespuestaDto editar(String id, Producto producto) {
 		RespuestaDto prod = listarUno(id);
 		if (prod.isOk()) {
-			prod.getProducto().setNombre(producto.getNombre());
-			prod.getProducto().setPrecio(producto.getPrecio());
-			prod.getProducto().setDescripcion(producto.getDescripcion());
+			Producto p = repository.findByNombre(producto.getNombre());
+			if (p == null || id.equals( prod.getProducto().getId()) ) {
+				prod.getProducto().setNombre(( producto.getNombre() != null )? producto.getNombre():prod.getProducto().getNombre() );
+				prod.getProducto().setPrecio(( producto.getPrecio() != null )? producto.getPrecio():prod.getProducto().getPrecio() );
+				prod.getProducto().setDescripcion( (producto.getDescripcion() != null )? producto.getDescripcion():prod.getProducto().getDescripcion() );
 
-			prod.getProducto().setExistentes(
-					(producto.getExistentes() >= 0) ? producto.getExistentes() : prod.getProducto().getExistentes());
-			return new RespuestaDto(true, "Producto editado", repository.save(prod.getProducto()));
+				prod.getProducto().setExistentes((producto.getExistentes() >= 0) ? producto.getExistentes()
+						: prod.getProducto().getExistentes());
+				return new RespuestaDto(true, "Producto editado", repository.save(prod.getProducto()));
+			} else {
+				return new RespuestaDto(false, "El producto ya existe en BD");
+			}
 		} else {
 			return new RespuestaDto(false, "El producto con id:" + id + " No existe");
 		}
@@ -77,7 +94,7 @@ public class ProductoServiceImpl implements ProductoService {
 
 			if (!(producto.getProducto().getImagen().contains(noProductoId))) {
 				try {
-					eliminarImagen(producto.getProducto().getImagen());
+					eliminarImagen(producto.getProducto().getId());
 				} catch (Exception e) {
 					log.error("Error, al eliminar la imagen del producto eliminado");
 					return new RespuestaDto(false, "Error al eliminar la imagen del producto");
@@ -89,10 +106,10 @@ public class ProductoServiceImpl implements ProductoService {
 		}
 	}
 
-	private void eliminarImagen(String urlImage) throws Exception {
-		Imagen imagen = iRepository.findByImagenUrl(urlImage);
+	private void eliminarImagen(String idProducto) throws Exception {
+		Imagen imagen = iRepository.findByProductoId(idProducto);
 		cloudinary.delete(imagen.getImagenId());
-		iRepository.delete(imagen);
+		iRepository.deleteById(imagen.getId());
 	}
 
 	@Override
@@ -100,6 +117,33 @@ public class ProductoServiceImpl implements ProductoService {
 		List<String> errores = procesarCompra(lista);
 		return (errores.size() > 0) ? new RespuestaDto(false, errores)
 				: new RespuestaDto(true, "Todos los productos fueron agregados");
+	}
+
+	@Override
+	public RespuestaDto comprarUno(CVProductos producto) {
+		RespuestaDto resp = new RespuestaDto();
+		try {
+			RespuestaDto r = listarUno(producto.getId());
+			if (r.isOk()) {
+				if (producto.getCantidad() < 0) {
+					resp.setOk(false);
+					resp.setMensaje("No se pueden tener un numero de productos negativos");
+				} else {
+					r.getProducto().setExistentes(producto.getCantidad());
+					repository.save(r.getProducto());
+					resp.setOk(true);
+					resp.setMensaje("Producto actualizado con exito!");
+				}
+			} else {
+				resp.setOk(false);
+				resp.setMensaje("Error, el producto NO se encontro en la BD");
+			}
+
+		} catch (Exception e) {
+			resp.setOk(false);
+			resp.setMensaje("Error, algo salio mal al intentar actulizar las existencias");
+		}
+		return resp;
 	}
 
 	@Override
@@ -151,4 +195,5 @@ public class ProductoServiceImpl implements ProductoService {
 			return null;
 		}
 	}
+
 }

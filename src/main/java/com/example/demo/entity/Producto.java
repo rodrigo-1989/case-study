@@ -4,6 +4,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -23,5 +24,7 @@ public class Producto {
 	@NotEmpty(message = "La descripcion es importante, puede ser la marca")
 	private String descripcion;
 	private String imagen;
+	@Transient
+	private String idImagen;
 	private int existentes;
 }

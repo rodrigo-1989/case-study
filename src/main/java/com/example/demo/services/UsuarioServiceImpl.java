@@ -20,7 +20,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entity.Imagen;
 import com.example.demo.entity.Usuario;
+import com.example.demo.repository.ImagenRepository;
 import com.example.demo.repository.UsuarioRepository;
 
 @Service
@@ -29,9 +31,14 @@ public class UsuarioServiceImpl implements UsuarioService,UserDetailsService {
 	@Autowired
 	private UsuarioRepository repository;
 	@Autowired
+	private ImagenRepository iRepository;
+	@Autowired
 	private BCryptPasswordEncoder encoder;
+	
 	@Value("${url.image.nousuario}")
 	private String noUsuarioUrl;
+	@Value("${url.idnousuario}")
+	private String noUsuarioId;
 
 	@Override
 	public List<Usuario> listarTodos() {
@@ -48,10 +55,13 @@ public class UsuarioServiceImpl implements UsuarioService,UserDetailsService {
 		usuario.setCreateAt(new Date());
 		usuario.setEnabled(true);
 		usuario.setIntentos(0);
-		usuario.setImage(noUsuarioUrl);
+		usuario.setImage( (usuario.getImage() == null) ?  noUsuarioUrl:usuario.getImage() );
 		usuario.setRoles(Arrays.asList("ROLE_USER"));
 		usuario.setPassword(encoder.encode(usuario.getPassword()));
-		return repository.save(usuario);
+		
+		Usuario u = repository.save(usuario);
+		iRepository.save(new Imagen(u.getName()+".jpeg",u.getImage(),noUsuarioUrl,null,u.getId()));
+		return u;
 	}
 
 	@Override

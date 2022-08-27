@@ -40,7 +40,7 @@ public class AuthorizationServerConfig  extends AuthorizationServerConfigurerAda
 	
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		security.tokenKeyAccess("permiAll()")
+		security.tokenKeyAccess("permitAll()")
 		.checkTokenAccess("isAuthenticated()");
 	}
 	

@@ -72,7 +72,6 @@ public class UsuarioController {
 	public ResponseEntity<?> eliminar(@PathVariable String id){
 		return new ResponseEntity(service.eliminar(id),HttpStatus.FOUND);
 	}
-
 	
 	private ResponseEntity<?> respuesta(boolean status,String msg, Object objeto,String nombreObjeto, HttpStatus httpstatus){
 		Map<String, Object> resp = new HashMap<>();

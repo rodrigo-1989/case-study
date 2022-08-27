@@ -64,6 +64,10 @@ public class ProductoController {
 	public RespuestaDto comprar(@RequestBody List<CVProductos> lista) {
 		return service.comprar(lista);
 	}
+	@PutMapping("/compraTiendaUno")
+	public RespuestaDto comprarUno(@RequestBody CVProductos lista) {
+		return service.comprarUno(lista);
+	}
 
 	@PostMapping("/compraUsuario")
 	public RespuestaDto vender(@RequestBody List<CVProductos> lista) {

@@ -14,6 +14,7 @@ public interface ProductoService {
 	public RespuestaDto editar(String id, Producto producto);
 	public RespuestaDto eliminar(String id);
 	public RespuestaDto comprar(List<CVProductos> lista);
+	public RespuestaDto comprarUno(CVProductos producto);
 	public RespuestaDto vender(List<CVProductos> lista);
 	
 }
