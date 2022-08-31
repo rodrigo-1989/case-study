@@ -24,8 +24,8 @@ import com.example.demo.entity.Producto;
 import com.example.demo.services.ProductoService;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping(value = "/productos")
-@CrossOrigin
 public class ProductoController {
 
 	@Autowired

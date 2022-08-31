@@ -27,8 +27,8 @@ import com.example.demo.services.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
-@SuppressWarnings({ "unchecked", "rawtypes" })
 @CrossOrigin("*")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class UsuarioController {
 
 	@Autowired

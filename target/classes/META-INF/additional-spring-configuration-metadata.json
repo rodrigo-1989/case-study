@@ -1,0 +1,47 @@
+{"properties": [
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.expiration'"
+  },
+  {
+    "name": "cliente.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'cliente.secret'"
+  },
+  {
+    "name": "appliction.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'appliction.secret'"
+  },
+  {
+    "name": "authorized.grandtypes",
+    "type": "java.lang.String",
+    "description": "A description for 'authorized.grandtypes'"
+  },
+  {
+    "name": "url.image.nousuario",
+    "type": "java.lang.String",
+    "description": "A description for 'url.image.nousuario'"
+  },
+  {
+    "name": "url.image.noproducto",
+    "type": "java.lang.String",
+    "description": "A description for 'url.image.noproducto'"
+  },
+  {
+    "name": "url.idnousuario",
+    "type": "java.lang.String",
+    "description": "A description for 'url.idnousuario'"
+  },
+  {
+    "name": "url.idnoproducto",
+    "type": "java.lang.String",
+    "description": "A description for 'url.idnoproducto'"
+  }
+]}

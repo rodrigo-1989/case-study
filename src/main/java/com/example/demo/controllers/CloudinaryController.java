@@ -24,7 +24,7 @@ import com.example.demo.entity.Usuario;
 import com.example.demo.services.ImagenService;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/cloudinary")
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CloudinaryController {

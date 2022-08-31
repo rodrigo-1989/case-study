@@ -60,7 +60,7 @@ public class UsuarioServiceImpl implements UsuarioService,UserDetailsService {
 		usuario.setPassword(encoder.encode(usuario.getPassword()));
 		
 		Usuario u = repository.save(usuario);
-		iRepository.save(new Imagen(u.getName()+".jpeg",u.getImage(),noUsuarioUrl,null,u.getId()));
+		iRepository.save(new Imagen(u.getName()+".jpeg",u.getImage(),noUsuarioUrl,u.getId(),null));
 		return u;
 	}
 

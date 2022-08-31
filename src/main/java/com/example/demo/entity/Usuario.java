@@ -17,13 +17,15 @@ import lombok.Data;
 public class Usuario {
 
 	private String id;
+	
 	@NotBlank(message = "El nombre es requerido")
 	private String name;
 	@NotBlank(message = "El usuario es requerido")
-	@Min(value = 6,message = "El nombre de usuario debe de tener un minimo de 6 caracteres")
+//	@Min(value = 5, message = "El usuario debe de tener un minimo de 5 caracteres")
 	private String username;
+	
 	@NotBlank(message = "La contraseña es requerida")
-	@Min(value = 6,message = "La contraseña debe de tener un minimo de 6 caracteres")
+	@Min(value = 5, message = "La contraseña debe de tener un minimo de 5 caracteres")
 	private String password;
 	@NotBlank(message = "El correo es requerido")
 	@Email(message = "El formato de correo no es valido")
