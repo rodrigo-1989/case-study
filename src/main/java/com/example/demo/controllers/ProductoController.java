@@ -40,6 +40,10 @@ public class ProductoController {
 	public RespuestaDto listarUno(@PathVariable String id) {
 		return service.listarUno(id);
 	}
+	@GetMapping("/buscarParecidos/{nombre}")
+	public RespuestaDto listarParecidos(@PathVariable String nombre) {
+		return service.listarParecidos(nombre);
+	}
 
 	@PostMapping
 	public RespuestaDto crear(@RequestBody @Valid Producto producto, BindingResult binding) {

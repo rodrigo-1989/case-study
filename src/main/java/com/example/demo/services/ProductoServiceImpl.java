@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,24 +46,29 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	@Override
+	public RespuestaDto listarParecidos(String nombre) {
+		return new RespuestaDto(true, "Productos encontrados", repository.findByNombreContainingIgnoreCase(nombre));
+	}
+
+	@Override
 	public RespuestaDto crear(Producto producto) {
 		RespuestaDto response = new RespuestaDto();
 		Producto p = repository.findByNombre(producto.getNombre());
-		producto.setImagen( producto.getImagen() == null ?  noProductoUrl: producto.getImagen());
+		producto.setImagen(producto.getImagen() == null ? noProductoUrl : producto.getImagen());
 		producto.setExistentes((producto.getExistentes() > 0) ? producto.getExistentes() : 0);
-		
-		if(p == null ) {
+
+		if (p == null) {
 			Producto pn = repository.save(producto);
-			iRepository.save(new Imagen(pn.getNombre()+".jpeg",pn.getImagen(),noProductoId,null,pn.getId()));
+			iRepository.save(new Imagen(pn.getNombre() + ".jpeg", pn.getImagen(), noProductoId, null, pn.getId()));
 			response.setOk(true);
-			response.setMensaje( "Producto creado con exito!");
+			response.setMensaje("Producto creado con exito!");
 			response.setProducto(pn);
-		}else {	
+		} else {
 			response.setOk(false);
 			response.setMensaje("El producto ya existe en BD");
 		}
 		return response;
-		
+
 	}
 
 	@Override
@@ -70,11 +76,25 @@ public class ProductoServiceImpl implements ProductoService {
 		RespuestaDto prod = listarUno(id);
 		if (prod.isOk()) {
 			Producto p = repository.findByNombre(producto.getNombre());
-			if (p == null || id.equals( prod.getProducto().getId()) ) {
-				prod.getProducto().setNombre(( producto.getNombre() != null )? producto.getNombre():prod.getProducto().getNombre() );
-				prod.getProducto().setPrecio(( producto.getPrecio() != null )? producto.getPrecio():prod.getProducto().getPrecio() );
-				prod.getProducto().setDescripcion( (producto.getDescripcion() != null )? producto.getDescripcion():prod.getProducto().getDescripcion() );
+			if (p == null || id.equals(prod.getProducto().getId())) {
+				prod.getProducto().setNombre(producto.getNombre());
+				prod.getProducto().setPrecio(producto.getPrecio());
+				prod.getProducto().setDescripcion(producto.getDescripcion());
 
+				if (producto.getIdImagen() != null) {
+					Imagen imagen = iRepository.findByProductoId(id);
+					try {
+						if (!(producto.getImagen().contains(noProductoId)))
+							cloudinary.delete(imagen.getImagenId());
+					} catch (IOException e) {
+						log.error("Algo salio mal al eliminar la imagen del producto");
+						return new RespuestaDto(false, "Algo salio mal al eliminar la imagen del producto");
+					}
+					imagen.setImagenId(producto.getIdImagen());
+					imagen.setImagenUrl(producto.getImagen());
+					prod.getProducto().setImagen(producto.getImagen());
+					iRepository.save(imagen);
+				}
 				prod.getProducto().setExistentes((producto.getExistentes() >= 0) ? producto.getExistentes()
 						: prod.getProducto().getExistentes());
 				return new RespuestaDto(true, "Producto editado", repository.save(prod.getProducto()));

@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,11 +21,11 @@ public class Usuario {
 	@NotBlank(message = "El nombre es requerido")
 	private String name;
 	@NotBlank(message = "El usuario es requerido")
-//	@Min(value = 5, message = "El usuario debe de tener un minimo de 5 caracteres")
+	@Size(min = 5,message = "Nombre debe tener mas o igual a 5 caracteres")
 	private String username;
 	
 	@NotBlank(message = "La contraseña es requerida")
-	@Min(value = 5, message = "La contraseña debe de tener un minimo de 5 caracteres")
+	@Size(min = 5, message = "La contraseña debe de tener un minimo de 5 caracteres")
 	private String password;
 	@NotBlank(message = "El correo es requerido")
 	@Email(message = "El formato de correo no es valido")

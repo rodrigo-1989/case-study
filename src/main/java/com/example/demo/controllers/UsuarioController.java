@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.EditarUsuario;
 import com.example.demo.entity.Usuario;
 import com.example.demo.services.UsuarioService;
 
@@ -46,7 +47,7 @@ public class UsuarioController {
 	public ResponseEntity<?> listarUno(@PathVariable String id){
 		Usuario usuario = service.listarUno(id);
 		if(usuario == null)
-			return respuesta(false,"No se encontro el usuario",null,"msg",HttpStatus.NOT_FOUND);
+			return respuesta(false,"No se encontro el usuario o algo salio mal",null,"msg",HttpStatus.NOT_FOUND);
 		return respuesta(true,null,usuario,"usuario",HttpStatus.OK);
 	}
 	
@@ -62,7 +63,7 @@ public class UsuarioController {
 		return respuesta(true,null,service.crear(usuario),"usuario",HttpStatus.OK);
 	}
 	@PutMapping("/{id}")
-	public ResponseEntity<?>  editar (@PathVariable String id,@RequestBody @Valid Usuario usuario,BindingResult result){
+	public ResponseEntity<?>  editar (@PathVariable String id,@RequestBody @Valid EditarUsuario usuario,BindingResult result){
 		if(result.hasErrors())
 			return procesarErrores(result);
 		return respuesta(true,null,service.editar(id,usuario),"usuario",HttpStatus.OK);
@@ -70,7 +71,7 @@ public class UsuarioController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> eliminar(@PathVariable String id){
-		return new ResponseEntity(service.eliminar(id),HttpStatus.FOUND);
+		return new ResponseEntity(service.eliminar(id),HttpStatus.OK);
 	}
 	
 	private ResponseEntity<?> respuesta(boolean status,String msg, Object objeto,String nombreObjeto, HttpStatus httpstatus){

@@ -10,6 +10,7 @@ public interface ProductoService {
 	
 	public RespuestaDto listarTodos();
 	public RespuestaDto listarUno(String id);
+	public RespuestaDto listarParecidos(String nombre);
 	public RespuestaDto crear(Producto producto);
 	public RespuestaDto editar(String id, Producto producto);
 	public RespuestaDto eliminar(String id);

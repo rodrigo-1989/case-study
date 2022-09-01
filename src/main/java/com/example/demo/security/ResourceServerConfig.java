@@ -30,12 +30,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/swagger-ui.html/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/webjars/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/v2/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/webjars/**", "/v2/**", "/swagger-resources/**", 
+						"/swagger-ui.html/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/usuarios/crear").permitAll()
-				.antMatchers(HttpMethod.GET, "/productos", "/productos/{id}", "/usuarios/{id}").permitAll()
+				.antMatchers(HttpMethod.GET, "/productos", "/productos/{id}", 
+						"/usuarios/{id}","/productos/buscarParecidos/{nombre}").permitAll()
+				.antMatchers(HttpMethod.GET,"/usuarios/verificacion/{id}").authenticated()
 				.antMatchers(HttpMethod.POST, "/cloudinary/**").authenticated()
 				.antMatchers(HttpMethod.DELETE, "/cloudinary/**").hasRole("ADMIN")
 //		.antMatchers(HttpMethod.POST,"/productos").hasRole("ADMIN")
@@ -44,8 +44,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/productos/compraUsuario").hasAnyRole("ADMIN", "USER")
 				.antMatchers(HttpMethod.PUT, "/productos/compraTienda").hasRole("ADMIN")
 				.antMatchers(HttpMethod.PUT, "/usuarios/{id}").hasAnyRole("ADMIN", "USER")
-				.antMatchers(HttpMethod.DELETE, "/productos/{id}", "/usuarios/{id}").hasRole("ADMIN").anyRequest()
-				.authenticated();
+				.antMatchers(HttpMethod.DELETE, "/productos/{id}", "/usuarios/{id}").hasAnyRole("ADMIN", "COMPRAS")
+				.anyRequest().authenticated();
 
 	}
 

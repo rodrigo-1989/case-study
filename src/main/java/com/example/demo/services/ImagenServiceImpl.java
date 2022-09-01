@@ -106,45 +106,4 @@ public class ImagenServiceImpl implements ImagenService {
 		}
 	}
 
-	@Override
-	public RespuestaDto editarIP(Producto producto,String id) {
-		Imagen imagen = iRepository.findByProductoId(id);
-		if(imagen != null) {
-		try {
-			if (!(producto.getImagen().contains(noProductoId)))
-				service.delete(imagen.getImagenId());
-		} catch (IOException e) {
-			log.error("Algo salio mal al eliminar la imagen del producto");
-			return new RespuestaDto(false,"Algo salio mal al eliminar la imagen del producto");
-		}
-		imagen.setImagenId(producto.getIdImagen());
-		imagen.setImagenUrl(producto.getImagen());
-		iRepository.save(imagen);
-		pRepository.save(producto);
-		return new RespuestaDto(true,String.format("Imagen de %s actualizada",producto.getNombre()));
-	}else {
-		return new RespuestaDto(false,String.format("Id:%s de Producto NO existe en BD"));
-	}
-	}
-
-	@Override
-	public RespuestaDto editarIU(Usuario usuario, String id) {
-		Imagen imagen = iRepository.findByUsuarioId(id);
-		if(imagen != null) {
-			try {
-				if (!(usuario.getImage().contains(noUsuarioId)))
-					service.delete(imagen.getImagenId());
-			} catch (IOException e) {
-				log.error("Algo salio mal al eliminar la imagen del producto");
-				return new RespuestaDto(false,"Algo salio mal al eliminar la imagen del producto");
-			}
-			imagen.setImagenId(usuario.getIdImage());
-			imagen.setImagenUrl(usuario.getImage());
-			iRepository.save(imagen);
-			uRepository.save(usuario);
-			return new RespuestaDto(true,String.format("Imagen de %s actualizada",usuario.getName()));
-		}else {
-			return new RespuestaDto(false,String.format("Id:%s de usuario NO existe en BD"));
-		}
-	}
 }

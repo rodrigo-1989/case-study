@@ -12,15 +12,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.RespuestaDto;
-import com.example.demo.entity.Producto;
-import com.example.demo.entity.Usuario;
 import com.example.demo.services.ImagenService;
 
 @RestController
@@ -53,13 +50,4 @@ public class CloudinaryController {
 		return new ResponseEntity(service.eliminarI(id), HttpStatus.OK);
 	}
 	
-	@PostMapping("/editarImagenP/{id}")
-	public ResponseEntity<?> editarImagenP(@RequestBody Producto producto,@PathVariable String id) throws IOException{
-		return new ResponseEntity(service.editarIP(producto,id), HttpStatus.OK);
-	}
-	
-	@PostMapping("/editarImagenU/{id}")
-	public ResponseEntity<?> editarImageU(@RequestBody Usuario usuario,@PathVariable String id) throws IOException{
-		return new ResponseEntity(service.editarIU(usuario,id), HttpStatus.OK);
-	}
 }
