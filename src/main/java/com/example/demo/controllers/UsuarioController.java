@@ -73,6 +73,14 @@ public class UsuarioController {
 	public ResponseEntity<?> eliminar(@PathVariable String id){
 		return new ResponseEntity(service.eliminar(id),HttpStatus.OK);
 	}
+	@PutMapping("/editarRoles/{id}")
+	public ResponseEntity<?> editarRoles(@RequestBody Usuario usuario,@PathVariable String id){
+		Usuario u = service.editarRoles(usuario,id);
+		if(u != null)
+			return new ResponseEntity(u,HttpStatus.OK);
+		else
+			return new ResponseEntity("Id de usuario no encontrado en BD",HttpStatus.NOT_FOUND);
+	}
 	
 	private ResponseEntity<?> respuesta(boolean status,String msg, Object objeto,String nombreObjeto, HttpStatus httpstatus){
 		Map<String, Object> resp = new HashMap<>();

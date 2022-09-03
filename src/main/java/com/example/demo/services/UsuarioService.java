@@ -18,6 +18,7 @@ public interface UsuarioService {
 	public boolean existeUsername(String username);
 	
 	public Usuario buscarPorUsuario(String username);
+	public Usuario editarRoles(Usuario usuario,String id);
 	
 	public Usuario editarLogin(String id, Usuario usuario);
 }

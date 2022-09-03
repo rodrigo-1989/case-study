@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import com.example.demo.entity.EditarUsuario;
 import com.example.demo.entity.Imagen;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.ImagenRepository;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UsuarioRepository;
 
 @Service
@@ -32,6 +34,8 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	private Logger log = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 	@Autowired
 	private UsuarioRepository repository;
+	@Autowired
+	private RoleRepository rRepository;
 	@Autowired
 	private ImagenRepository iRepository;
 	@Autowired
@@ -108,12 +112,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 			respuesta.put("msg", "El usuario que intentas eliminar no existe en la BD");
 			return respuesta;
 		}
-		if (!usuario.isEnabled()) {
-			respuesta.put("ok", false);
-			respuesta.put("msg", "El usuario que intentas eliminar esta dado de baja contacta al administrador");
-			return respuesta;
-		}
-		usuario.setEnabled(false);
+		usuario.setEnabled(!usuario.isEnabled());
 		repository.save(usuario);
 		respuesta.put("ok", true);
 		respuesta.put("msg", "Usuario dado de baja");
@@ -160,6 +159,30 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		user.setIntentos(usuario.getIntentos());
 		user.setEnabled(usuario.isEnabled());
 		return repository.save(user);
+	}
+
+	@Override
+	public Usuario editarRoles(Usuario usuario, String id) {
+		Usuario user = repository.findById(id).orElse(null);
+		if (user != null) {
+			List<String> roles = new ArrayList<String>();
+			List<String> rolesNuevos = new ArrayList<String>();
+			rRepository.findAll().forEach(r -> {
+				roles.add(r.getRol());
+			});
+			List<String> rolesU = usuario.getRoles();
+
+			rolesU.forEach(r -> {
+				if (roles.contains(r) && !rolesNuevos.contains(r))
+					rolesNuevos.add(r);
+			});
+			if (!(rolesNuevos.contains(roles.get(0))))
+				rolesNuevos.add(roles.get(0));
+			user.setRoles(rolesNuevos);
+			return repository.save(user);
+		} else {
+			return null;
+		}
 	}
 
 }

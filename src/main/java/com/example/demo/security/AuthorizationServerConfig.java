@@ -50,7 +50,7 @@ public class AuthorizationServerConfig  extends AuthorizationServerConfigurerAda
 		.scopes("read","write")
 		.authorizedGrantTypes(authorize)
 		.authorizedGrantTypes("password", "authorization_code", "refresh_token")
-		.accessTokenValiditySeconds(expiration)
+		.accessTokenValiditySeconds(expiration*2)
         .refreshTokenValiditySeconds(expiration*12);
 //		.accessTokenValiditySeconds(expiration);
 	}
