@@ -29,6 +29,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				.permitAll().antMatchers(HttpMethod.POST, "/usuarios/crear").permitAll()
 				.antMatchers(HttpMethod.GET, "/usuarios/{id}", "/productos/buscarParecidos/{nombre}", "/productos/{id}").authenticated()
 				.antMatchers("/cloudinary/**").authenticated()
+				.antMatchers(HttpMethod.GET,"/usuarios").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/productos").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.PUT, "/productos/{id}").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.POST, "/productos/compraUsuario").hasAnyRole("ADMIN", "USER")

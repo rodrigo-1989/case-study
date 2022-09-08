@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -22,7 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.EditarUsuario;
+import com.example.demo.dto.EditarUsuario;
 import com.example.demo.entity.Imagen;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.ImagenRepository;
@@ -44,9 +42,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	private BCryptPasswordEncoder encoder;
 
 	@Value("${url.image.nousuario}")
-	private String noUsuarioUrl;
+	private String noImagenUsuarioUrl;
 	@Value("${url.idnousuario}")
-	private String noUsuarioId;
+	private String noImagenIdUsuario;
 
 	@Override
 	public List<Usuario> listarTodos() {
@@ -63,61 +61,49 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		usuario.setCreateAt(new Date());
 		usuario.setEnabled(true);
 		usuario.setIntentos(0);
-		usuario.setImage((usuario.getImage() == null) ? noUsuarioUrl : usuario.getImage());
+		usuario.setImage(noImagenUsuarioUrl);
 		usuario.setRoles(Arrays.asList("ROLE_USER"));
 		usuario.setPassword(encoder.encode(usuario.getPassword()));
 
 		Usuario u = repository.save(usuario);
-		iRepository.save(new Imagen(u.getName() + ".jpeg", u.getImage(), noUsuarioId, u.getId(), null));
+		Imagen imagen = new Imagen(u.getName() + ".jpeg", u.getImage(), noImagenIdUsuario, u.getId(), null);
+		iRepository.save(imagen);
 		return u;
 	}
 
 	@Override
-	public Usuario editar(String id, EditarUsuario usuario) {
+	public Usuario editar(String id, EditarUsuario u) {
 		Usuario user = listarUno(id);
 		if (user == null)
 			return null;
-		user.setName(
-				(usuario.getName() != null && usuario.getName().length() > 4) ? usuario.getName() : user.getName());
-		user.setPassword((usuario.getPassword() != null && usuario.getPassword().length() > 4)
-				? encoder.encode(usuario.getPassword())
+		user.setName((u.getName() != null && u.getName().length() > 4) ? u.getName() : user.getName());
+		user.setPassword((u.getPassword() != null && u.getPassword().length() > 4) ? encoder.encode(u.getPassword())
 				: user.getPassword());
-		if (usuario.getImage() != null) {
+		if (u.getImage() != null) {
 			Imagen imagen = iRepository.findByUsuarioId(id);
-			if (imagen != null) {
+			if (!user.getImage().contains(noImagenIdUsuario)) {
 				try {
-					if (!(usuario.getImage().contains(noUsuarioId)))
-						service.delete(imagen.getImagenId());
+					service.delete(imagen.getImagenId());
 				} catch (IOException e) {
 					log.error("Algo salio mal al eliminar la imagen del usuario");
 					return null;
 				}
-				imagen.setImagenId(usuario.getIdImage());
-				imagen.setImagenUrl(usuario.getImage());
-				user.setImage(usuario.getImage());
-				iRepository.save(imagen);
-			} else {
-				return null;
 			}
+			imagen.setImagenId(u.getIdImage());
+			imagen.setImagenUrl(u.getImage());
+			user.setImage(u.getImage());
+			iRepository.save(imagen);
 		}
 		return repository.save(user);
 	}
 
 	@Override
-	public Map<String, Object> eliminar(String id) {
-		Map<String, Object> respuesta = new HashMap<String, Object>();
+	public Usuario eliminar(String id) {
 		Usuario usuario = listarUno(id);
-		if (usuario == null) {
-			respuesta.put("ok", false);
-			respuesta.put("msg", "El usuario que intentas eliminar no existe en la BD");
-			return respuesta;
-		}
+		if (usuario == null) 
+			return null;
 		usuario.setEnabled(!usuario.isEnabled());
-		repository.save(usuario);
-		respuesta.put("ok", true);
-		respuesta.put("msg", "Usuario dado de baja");
-		return respuesta;
-
+		return repository.save(usuario);
 	}
 
 	@Override
@@ -165,11 +151,10 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	public Usuario editarRoles(Usuario usuario, String id) {
 		Usuario user = repository.findById(id).orElse(null);
 		if (user != null) {
-			List<String> roles = new ArrayList<String>();
-			List<String> rolesNuevos = new ArrayList<String>();
-			rRepository.findAll().forEach(r -> {
-				roles.add(r.getRol());
-			});
+			List<String> roles = new ArrayList<>();
+			List<String> rolesNuevos = new ArrayList<>();
+			
+			rRepository.findAll().forEach(r -> roles.add(r.getRol()));
 			List<String> rolesU = usuario.getRoles();
 
 			rolesU.forEach(r -> {

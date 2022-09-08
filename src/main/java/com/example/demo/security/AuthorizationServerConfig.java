@@ -49,10 +49,9 @@ public class AuthorizationServerConfig  extends AuthorizationServerConfigurerAda
 		clients.inMemory().withClient(appSecret).secret(passwordEncoder.encode(clienteSecret))
 		.scopes("read","write")
 		.authorizedGrantTypes(authorize)
-		.authorizedGrantTypes("password", "authorization_code", "refresh_token")
-		.accessTokenValiditySeconds(expiration*2)
-        .refreshTokenValiditySeconds(expiration*12);
-//		.accessTokenValiditySeconds(expiration);
+		.authorizedGrantTypes("password", "refresh_token")
+		.accessTokenValiditySeconds(expiration)
+        .refreshTokenValiditySeconds(expiration*48);
 	}
 	
 	@Override

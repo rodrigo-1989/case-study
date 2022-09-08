@@ -3,12 +3,11 @@ package com.example.demo.dto;
 import java.util.List;
 
 import com.example.demo.entity.Producto;
+import com.example.demo.entity.Usuario;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class RespuestaDto {
 
 	private boolean ok;
@@ -16,27 +15,21 @@ public class RespuestaDto {
 	private List<Producto> productos;
 	private Producto producto;
 	private List<String> errores;
+	private List<Usuario> usuarios;
+	private Usuario usuario;
 	
-
 	public RespuestaDto() {}
 
-	public RespuestaDto(boolean ok, List<String> errores) {
-		this.ok = ok;
-		this.errores = errores;
-	}
-	public RespuestaDto(boolean ok, String mensaje) {
-		this.ok = ok;
-		this.mensaje = mensaje;
-	}
-	public RespuestaDto(boolean ok, String mensaje, List<Producto> productos) {
+	public RespuestaDto(boolean ok, String mensaje, List<Producto> productos, Producto producto, List<String> errores,
+			List<Usuario> usuarios, Usuario usuario) {
 		this.ok = ok;
 		this.mensaje = mensaje;
 		this.productos = productos;
-	}
-	public RespuestaDto(boolean ok, String mensaje, Producto producto) {
-		this.ok = ok;
-		this.mensaje = mensaje;
 		this.producto = producto;
+		this.errores = errores;
+		this.usuarios = usuarios;
+		this.usuario = usuario;
 	}
-
+	
+	
 }

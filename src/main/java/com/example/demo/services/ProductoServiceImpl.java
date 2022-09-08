@@ -27,39 +27,46 @@ public class ProductoServiceImpl implements ProductoService {
 	@Autowired
 	private CloudinaryService cloudinary;
 	@Value("${url.image.noproducto}")
-	private String noProductoUrl;
+	private String noImagenProductoUrl;
 	@Value("${url.idnoproducto}")
-	private String noProductoId;
+	private String noImagenProducto;
 
 	@Override
 	public RespuestaDto listarTodos() {
-		List<Producto> productos = (List<Producto>) repository.findAll();
-		return (!productos.isEmpty()) ? new RespuestaDto(true, "Productos encontrados", productos)
-				: new RespuestaDto(false, "Ningun producto encontrado");
+		List<Producto> productos = repository.findAll();
+		return (!productos.isEmpty())
+				? new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null)
+				: new RespuestaDto(false, "Ningun producto encontrado", null, null, null, null, null);
 	}
 
 	@Override
 	public RespuestaDto listarUno(String id) {
 		Producto producto = repository.findById(id).orElse(null);
-		return (producto != null) ? new RespuestaDto(true, "Producto encontrado", producto)
-				: new RespuestaDto(false, "El producto que buscas no existe");
+		return (producto != null) ? new RespuestaDto(true, "Producto encontrado", null, producto, null, null, null)
+				: new RespuestaDto(false, "El producto que buscas no existe", null, null, null, null, null);
 	}
 
 	@Override
 	public RespuestaDto listarParecidos(String nombre) {
-		return new RespuestaDto(true, "Productos encontrados", repository.findByNombreContainingIgnoreCase(nombre));
+		List<Producto> productos = repository.findByNombreContainingIgnoreCase(nombre);
+		if (productos.isEmpty())
+			return new RespuestaDto(false, String.format("No hay productos parecidos con el temino: %s", nombre), null,
+					null, null, null, null);
+		return new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null);
 	}
 
 	@Override
 	public RespuestaDto crear(Producto producto) {
 		RespuestaDto response = new RespuestaDto();
 		Producto p = repository.findByNombre(producto.getNombre());
-		producto.setImagen(producto.getImagen() == null ? noProductoUrl : producto.getImagen());
-		producto.setExistentes((producto.getExistentes() > 0) ? producto.getExistentes() : 0);
 
 		if (p == null) {
+			producto.setImagen(producto.getImagen() == null ? noImagenProductoUrl : producto.getImagen());
+			producto.setExistentes((producto.getExistentes() > 0) ? producto.getExistentes() : 0);
 			Producto pn = repository.save(producto);
-			iRepository.save(new Imagen(pn.getNombre() + ".jpeg", pn.getImagen(), noProductoId, null, pn.getId()));
+			String idImage = producto.getIdImagen() == null ? noImagenProducto : producto.getIdImagen();
+			String urlImage = producto.getImagen() == null ? noImagenProductoUrl : producto.getImagen();
+			iRepository.save(new Imagen(pn.getNombre() + ".jpeg", urlImage, idImage, null, pn.getId()));
 			response.setOk(true);
 			response.setMensaje("Producto creado con exito!");
 			response.setProducto(pn);
@@ -76,71 +83,84 @@ public class ProductoServiceImpl implements ProductoService {
 		RespuestaDto prod = listarUno(id);
 		if (prod.isOk()) {
 			Producto p = repository.findByNombre(producto.getNombre());
-			if (p == null || id.equals(prod.getProducto().getId())) {
-				prod.getProducto().setNombre(producto.getNombre());
-				prod.getProducto().setPrecio(producto.getPrecio());
-				prod.getProducto().setDescripcion(producto.getDescripcion());
-
-				if (producto.getIdImagen() != null) {
-					Imagen imagen = iRepository.findByProductoId(id);
-					try {
-						if (!(producto.getImagen().contains(noProductoId)))
-							cloudinary.delete(imagen.getImagenId());
-					} catch (IOException e) {
-						log.error("Algo salio mal al eliminar la imagen del producto");
-						return new RespuestaDto(false, "Algo salio mal al eliminar la imagen del producto");
-					}
-					imagen.setImagenId(producto.getIdImagen());
-					imagen.setImagenUrl(producto.getImagen());
-					prod.getProducto().setImagen(producto.getImagen());
-					iRepository.save(imagen);
-				}
-				prod.getProducto().setExistentes((producto.getExistentes() >= 0) ? producto.getExistentes()
-						: prod.getProducto().getExistentes());
-				return new RespuestaDto(true, "Producto editado", repository.save(prod.getProducto()));
-			} else {
-				return new RespuestaDto(false, "El producto ya existe en BD");
-			}
+			if (p == null || id.equals(prod.getProducto().getId())) 
+				return edit(prod, producto, id);
+			return new RespuestaDto(false, "El producto ya existe en BD", null, null, null, null, null);
 		} else {
-			return new RespuestaDto(false, "El producto con id:" + id + " No existe");
+			return new RespuestaDto(false, String.format("El producto con id:%s No existe", id), null, null, null, null,
+					null);
 		}
+	}
+
+	private RespuestaDto edit(RespuestaDto prod, Producto producto, String id) {
+		prod.getProducto().setNombre(producto.getNombre());
+		prod.getProducto().setPrecio(producto.getPrecio());
+		prod.getProducto().setDescripcion(producto.getDescripcion());
+		System.out.println(producto.toString());
+		if (producto.getIdImagen() != null) {
+			Imagen imagen = iRepository.findByProductoId(id);
+			if (!prod.getProducto().getImagen().contains(noImagenProducto)) {
+				try {
+					cloudinary.delete(imagen.getImagenId());
+				} catch (IOException e) {
+					log.error("Algo salio mal al eliminar la imagen del producto");
+					return new RespuestaDto(false, "Algo salio mal al eliminar la imagen del producto", null, null,
+							null, null, null);
+				}
+			}
+			imagen.setImagenId(producto.getIdImagen());
+			imagen.setImagenUrl(producto.getImagen());
+			prod.getProducto().setImagen(producto.getImagen());
+			iRepository.save(imagen);
+
+		}
+		prod.getProducto().setExistentes(
+				(producto.getExistentes() >= 0) ? producto.getExistentes() : prod.getProducto().getExistentes());
+		return new RespuestaDto(true, "Producto editado", null, repository.save(prod.getProducto()), null, null, null);
 	}
 
 	@Override
 	public RespuestaDto eliminar(String id) {
 		RespuestaDto producto = listarUno(id);
 		if (producto.isOk()) {
-			repository.delete(producto.getProducto());
-
-			if (!(producto.getProducto().getImagen().contains(noProductoId))) {
+			repository.deleteById(producto.getProducto().getId());
+			Imagen imagen = iRepository.findByProductoId(producto.getProducto().getId());
+			if (!producto.getProducto().getImagen().contains(noImagenProducto)) {
 				try {
-					eliminarImagen(producto.getProducto().getId());
+					eliminarImagen(imagen.getImagenId());
 				} catch (Exception e) {
 					log.error("Error, al eliminar la imagen del producto eliminado");
-					return new RespuestaDto(false, "Error al eliminar la imagen del producto");
+					return new RespuestaDto(false, "Error al eliminar la imagen del producto", null, null, null, null,
+							null);
 				}
 			}
-			return new RespuestaDto(true, "Producto eliminado :(");
+			iRepository.deleteById(imagen.getId());
+			return new RespuestaDto(true, "Producto eliminado :(", null, null, null, null, null);
 		} else {
-			return new RespuestaDto(false, "El que intentas eliminar no existe");
+			return new RespuestaDto(false, String.format("El id:%s del producto No existe", id), null, null, null, null,
+					null);
 		}
 	}
 
-	private void eliminarImagen(String idProducto) throws Exception {
-		Imagen imagen = iRepository.findByProductoId(idProducto);
-		cloudinary.delete(imagen.getImagenId());
-		iRepository.deleteById(imagen.getId());
+	private void eliminarImagen(String idImagen) {
+		try {
+			cloudinary.delete(idImagen);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public RespuestaDto comprar(List<CVProductos> lista) {
+	public RespuestaDto actualizarExistentes(List<CVProductos> lista) {
 		List<String> errores = procesarCompra(lista);
-		return (errores.size() > 0) ? new RespuestaDto(false, errores)
-				: new RespuestaDto(true, "Todos los productos fueron agregados");
+		return (!errores.isEmpty())
+				? new RespuestaDto(false, "Uno o mas produtos no existen en BD ó son insuficientes", null, null,
+						errores, null, null)
+				: new RespuestaDto(true, "Todos los productos fueron actualizados", null, null, null, null, null);
 	}
 
 	@Override
-	public RespuestaDto comprarUno(CVProductos producto) {
+	public RespuestaDto editarUno(CVProductos producto) {
 		RespuestaDto resp = new RespuestaDto();
 		try {
 			RespuestaDto r = listarUno(producto.getId());
@@ -169,16 +189,18 @@ public class ProductoServiceImpl implements ProductoService {
 	@Override
 	public RespuestaDto vender(List<CVProductos> lista) {
 		List<String> errores = procesarVenta(lista);
-		return (errores.size() > 0) ? new RespuestaDto(false, errores)
-				: new RespuestaDto(true, "Felicidades por tu compra");
+		return (!errores.isEmpty())
+				? new RespuestaDto(false, "Una o mas compras no se efectuaron, por que no puedes ingresar prodcutos",
+						null, null, errores, null, null)
+				: new RespuestaDto(true, "Felicidades por tu compra", null, null, null, null, null);
 	}
 
 	private List<String> procesarVenta(List<CVProductos> lista) {
-		List<String> errores = new ArrayList<String>();
+		List<String> errores = new ArrayList<>();
 		for (CVProductos p : lista) {
 			RespuestaDto r = listarUno(p.getId());
 			if (r.isOk()) {
-				String e = (p.getCantidad() > 0) ? "No estas autorizado para ingresar productos"
+				String e = (p.getCantidad() > 0) ? "*No estas autorizado ingresar productos*"
 						: comprarVenderProducto(r.getProducto(), p.getCantidad());
 				if (e != null)
 					errores.add(e);
@@ -189,7 +211,7 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	private List<String> procesarCompra(List<CVProductos> lista) {
-		List<String> errores = new ArrayList<String>();
+		List<String> errores = new ArrayList<>();
 		for (CVProductos p : lista) {
 			RespuestaDto r = listarUno(p.getId());
 			if (r.isOk()) {
@@ -208,7 +230,7 @@ public class ProductoServiceImpl implements ProductoService {
 			repository.save(producto);
 			return null;
 		} else if ((cantidad * -1) > producto.getExistentes()) {
-			return "No hay suficientes " + producto.getNombre() + " para hacer la compra";
+			return "No hay suficientes " + producto.getNombre() + " para vender";
 		} else {
 			producto.setExistentes(producto.getExistentes() + cantidad);
 			repository.save(producto);
