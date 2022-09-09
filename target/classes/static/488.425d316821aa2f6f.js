@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcase_study=self.webpackChunkcase_study||[]).push([[488],{6488:(l,t,o)=>{o.r(t),o.d(t,{SharedRoutingModule:()=>a});var n=o(9197),d=o(4650);const e=[];let a=(()=>{class u{}return u.\u0275fac=function(s){return new(s||u)},u.\u0275mod=d.oAB({type:u}),u.\u0275inj=d.cJS({imports:[n.Bz.forChild(e),n.Bz]}),u})()}}]);

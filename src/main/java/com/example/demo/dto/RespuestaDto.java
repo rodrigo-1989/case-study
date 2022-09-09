@@ -5,9 +5,13 @@ import java.util.List;
 import com.example.demo.entity.Producto;
 import com.example.demo.entity.Usuario;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RespuestaDto {
 
 	private boolean ok;
@@ -17,19 +21,5 @@ public class RespuestaDto {
 	private List<String> errores;
 	private List<Usuario> usuarios;
 	private Usuario usuario;
-	
-	public RespuestaDto() {}
-
-	public RespuestaDto(boolean ok, String mensaje, List<Producto> productos, Producto producto, List<String> errores,
-			List<Usuario> usuarios, Usuario usuario) {
-		this.ok = ok;
-		this.mensaje = mensaje;
-		this.productos = productos;
-		this.producto = producto;
-		this.errores = errores;
-		this.usuarios = usuarios;
-		this.usuario = usuario;
-	}
-	
 	
 }
