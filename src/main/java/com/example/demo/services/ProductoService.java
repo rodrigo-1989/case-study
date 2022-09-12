@@ -16,6 +16,6 @@ public interface ProductoService {
 	public RespuestaDto eliminar(String id);
 	public RespuestaDto actualizarExistentes(List<CVProductos> lista);
 	public RespuestaDto editarUno(CVProductos producto);
-	public RespuestaDto vender(List<CVProductos> lista);
+	public RespuestaDto vender(List<CVProductos> lista,String id);
 	
 }

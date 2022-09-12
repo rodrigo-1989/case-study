@@ -32,7 +32,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/usuarios").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/productos").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.PUT, "/productos/{id}").hasAnyRole("ADMIN", "COMPRAS")
-				.antMatchers(HttpMethod.POST, "/productos/compraUsuario").hasAnyRole("ADMIN", "USER")
+				.antMatchers(HttpMethod.POST, "/productos/compraUsuario/{id}").hasAnyRole("ADMIN", "USER")
 				.antMatchers(HttpMethod.PUT, "/productos/compraTienda").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.PUT, "/usuarios/{id}").authenticated()
 				.antMatchers(HttpMethod.DELETE, "/productos/{id}").hasAnyRole("ADMIN", "COMPRAS")

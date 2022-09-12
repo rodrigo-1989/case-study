@@ -1,23 +1,21 @@
 package com.example.demo.services;
 
-//import java.io.File;
-//import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
-//import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.example.demo.dto.RespuestaDto;
 
 @Service
-@SuppressWarnings({"rawtypes"})
 @CrossOrigin
-public class CloudinaryService {
-
+public class CloudinaryService implements ImagenService{
+	private Logger log = LoggerFactory.getLogger(CloudinaryService.class);
 	Cloudinary cloudinary;
 //	@Value("${cloudinary.net.cloudname}")
 //	private String cloudName;
@@ -26,37 +24,23 @@ public class CloudinaryService {
 //	@Value("${cloudinary.net.apisecret}")
 //	private String apiSecret;
 
-	private Map<String, String> valuesMap = new HashMap<>();
 
 	public CloudinaryService() {
+		Map<String, String> valuesMap = new HashMap<>();
 		valuesMap.put("cloud_name", "djxpuwlz0");
 		valuesMap.put("api_key", "265979327338123");
 		valuesMap.put("api_secret", "F2kO0PdCt6Vl6Tu9g-GWUgJYV5w");
-		
 		cloudinary = new Cloudinary(valuesMap);
 	}
-	
-//	public Map upload(MultipartFile multipartFile) throws IOException {
-//		File file =convert(multipartFile);
-//		Map result = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-//		file.delete();
-//		return result;
-//	}
 
-	public Map delete(String id) throws IOException {
-		Map result = cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
-		return result;
+	public RespuestaDto eliminarI(String id) {
+		try {
+			cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
+			return new RespuestaDto(true, "Se Elimino de la imagen sin problema",null,null,null,null,null);
+		} catch (Exception e) {
+			log.error("Error al eliminar la imagen ", e.getLocalizedMessage());
+			return new RespuestaDto(false, e.getMessage(),null,null,null,null,null);
+		}
 	}
-
-//	private File convert(MultipartFile multipartFile) throws IOException {
-//		File file = new File(multipartFile.getOriginalFilename());
-//		FileOutputStream fo;
-//
-//		fo = new FileOutputStream(file);
-//		fo.write(multipartFile.getBytes());
-//		fo.close();
-//		return file;
-//
-//	}
 
 }

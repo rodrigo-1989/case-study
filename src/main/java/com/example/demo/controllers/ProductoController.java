@@ -89,9 +89,9 @@ public class ProductoController {
 		return service.editarUno(lista);
 	}
 
-	@PostMapping("/compraUsuario")
-	public RespuestaDto vender(@RequestBody List<CVProductos> lista) {
-		return service.vender(lista);
+	@PostMapping("/compraUsuario/{id}")
+	public RespuestaDto vender(@RequestBody List<CVProductos> lista,@PathVariable String id) {
+		return service.vender(lista,id);
 	}
 
 	private RespuestaDto procesarErrores(BindingResult binding) {

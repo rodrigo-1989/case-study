@@ -1,6 +1,5 @@
 package com.example.demo.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,9 +36,11 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	@Autowired
 	private ImagenRepository iRepository;
 	@Autowired
-	private CloudinaryService service;
+	private CloudinaryService cloudinary;
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+	@Autowired
+	private CorreoService correo;
 
 	@Value("${url.image.nousuario}")
 	private String noImagenUsuarioUrl;
@@ -68,6 +69,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		Usuario u = repository.save(usuario);
 		Imagen imagen = new Imagen(u.getName() + ".jpeg", u.getImage(), noImagenIdUsuario, u.getId(), null);
 		iRepository.save(imagen);
+		StringBuilder msgCorreo = new StringBuilder();
+		msgCorreo.append("<h1>Bienvenido a caseStudy Store!</h1>");
+		correo.sendEmail(u.getEmail(), msgCorreo.toString());
 		return u;
 	}
 
@@ -81,14 +85,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 				: user.getPassword());
 		if (u.getImage() != null) {
 			Imagen imagen = iRepository.findByUsuarioId(id);
-			if (!user.getImage().contains(noImagenIdUsuario)) {
-				try {
-					service.delete(imagen.getImagenId());
-				} catch (IOException e) {
-					log.error("Algo salio mal al eliminar la imagen del usuario");
-					return null;
-				}
-			}
+			if (!user.getImage().contains(noImagenIdUsuario))
+				cloudinary.eliminarI(imagen.getImagenId());
+
 			imagen.setImagenId(u.getIdImage());
 			imagen.setImagenUrl(u.getImage());
 			user.setImage(u.getImage());
@@ -100,7 +99,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	@Override
 	public Usuario eliminar(String id) {
 		Usuario usuario = listarUno(id);
-		if (usuario == null) 
+		if (usuario == null)
 			return null;
 		usuario.setEnabled(!usuario.isEnabled());
 		return repository.save(usuario);
@@ -123,11 +122,11 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 			Usuario usuario = repository.findByUsernameIgnoreCase(username);
 
 			List<GrantedAuthority> authorities = usuario.getRoles().stream()
-					.map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
+					.map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 			return new User(usuario.getUsername(), usuario.getPassword(), usuario.isEnabled(), true, true, true,
 					authorities);
 		} catch (Exception e) {
-			log.error("Error en el login usuario o contraseña invalidos");
+			log.error("Error en el login, usuario o contraseña invalidos");
 			throw new UsernameNotFoundException("Error en el Login");
 		}
 	}
@@ -153,7 +152,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		if (user != null) {
 			List<String> roles = new ArrayList<>();
 			List<String> rolesNuevos = new ArrayList<>();
-			
+
 			rRepository.findAll().forEach(r -> roles.add(r.getRol()));
 			List<String> rolesU = usuario.getRoles();
 
