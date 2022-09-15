@@ -24,12 +24,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.cors().and().csrf().disable().authorizeRequests()
-				.antMatchers(HttpMethod.GET, "/webjars/**", "/v2/**", "/swagger-resources/**", "/swagger-ui.html/**",
-						"/productos")
-				.permitAll().antMatchers(HttpMethod.POST, "/usuarios/crear").permitAll()
-				.antMatchers(HttpMethod.GET, "/usuarios/{id}", "/productos/buscarParecidos/{nombre}", "/productos/{id}").authenticated()
+				.antMatchers(HttpMethod.GET, "/webjars/**", "/v2/**", "/swagger-resources/**", "/swagger-ui/**",
+						"/productos").permitAll()
+				.antMatchers(HttpMethod.POST, "/usuarios/crear").permitAll()
+				.antMatchers(HttpMethod.GET, "/usuarios/{id}", "/productos/buscarParecidos/{nombre}"
+						, "/productos/{id}").authenticated()
 				.antMatchers("/cloudinary/**").authenticated()
 				.antMatchers(HttpMethod.GET,"/usuarios").hasRole("ADMIN")
+				.antMatchers( "/pedidos","/pedidos/{id}").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.POST, "/productos").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.PUT, "/productos/{id}").hasAnyRole("ADMIN", "COMPRAS")
 				.antMatchers(HttpMethod.POST, "/productos/compraUsuario/{id}").hasAnyRole("ADMIN", "USER")

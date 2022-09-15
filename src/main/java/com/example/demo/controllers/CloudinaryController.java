@@ -1,10 +1,5 @@
 package com.example.demo.controllers;
 
-//import java.awt.image.BufferedImage;
-//import java.io.IOException;
-
-//import javax.imageio.ImageIO;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,22 +18,6 @@ public class CloudinaryController {
 
 	@Autowired
 	private ImagenService service;
-	
-//	@PostMapping("/uploadImagenUsuario/{id}")
-//	public RespuestaDto upload(@RequestParam MultipartFile file,@PathVariable String id) throws IOException{
-//		BufferedImage bi = ImageIO.read(file.getInputStream());
-//		if(bi == null) 
-//			return new RespuestaDto(false,"Imagen de usuario NO valida",null,null,null,null,null);
-//		return service.guardarIU(file,id);
-//	}
-//	
-//	@PostMapping("/uploadImagenProducto/{id}")
-//	public RespuestaDto uploadImagenProducto(@RequestParam MultipartFile file,@PathVariable String id) throws IOException{
-//		BufferedImage bi = ImageIO.read(file.getInputStream());
-//		if(bi == null) 
-//			return new RespuestaDto(false,"Imagen de producto NO valida",null,null,null,null,null);
-//		return service.guardarIP(file,id);
-//	}
 
 	@DeleteMapping("/deleteImagen/{id}")
 	public RespuestaDto deleteImagen(@PathVariable String id){

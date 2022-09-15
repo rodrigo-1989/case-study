@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import java.util.List;
 
+import com.example.demo.entity.Pedido;
 import com.example.demo.entity.Producto;
 import com.example.demo.entity.Usuario;
 
@@ -21,5 +22,6 @@ public class RespuestaDto {
 	private List<String> errores;
 	private List<Usuario> usuarios;
 	private Usuario usuario;
+	private List<Pedido> pedidos;
 	
 }

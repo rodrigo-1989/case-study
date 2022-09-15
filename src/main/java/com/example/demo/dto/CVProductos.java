@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class CVProductos {
 
-	private String id;
+	private String idProducto;
+	private double precio;
 	private int cantidad;
 }

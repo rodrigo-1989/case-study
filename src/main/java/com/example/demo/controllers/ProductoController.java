@@ -8,7 +8,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,6 @@ import com.example.demo.entity.Producto;
 import com.example.demo.services.ProductoService;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping(value = "/productos")
 public class ProductoController {
 
@@ -41,6 +39,7 @@ public class ProductoController {
 	public RespuestaDto listarUno(@PathVariable String id) {
 		return service.listarUno(id);
 	}
+	
 	@GetMapping("/buscarParecidos/{nombre}")
 	public RespuestaDto listarParecidos(@PathVariable String nombre) {
 		return service.listarParecidos(nombre);

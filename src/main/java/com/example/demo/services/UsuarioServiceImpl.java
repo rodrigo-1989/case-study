@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.EditarUsuario;
 import com.example.demo.entity.Imagen;
@@ -48,16 +49,19 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	private String noImagenIdUsuario;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Usuario> listarTodos() {
 		return repository.findAll();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Usuario listarUno(String id) {
 		return repository.findById(id).orElse(null);
 	}
 
 	@Override
+	@Transactional
 	public Usuario crear(Usuario usuario) {
 		usuario.setCreateAt(new Date());
 		usuario.setEnabled(true);
@@ -69,13 +73,12 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		Usuario u = repository.save(usuario);
 		Imagen imagen = new Imagen(u.getName() + ".jpeg", u.getImage(), noImagenIdUsuario, u.getId(), null);
 		iRepository.save(imagen);
-		StringBuilder msgCorreo = new StringBuilder();
-		msgCorreo.append("<h1>Bienvenido a caseStudy Store!</h1>");
-		correo.sendEmail(u.getEmail(), msgCorreo.toString());
+		correo.sendEmail(u.getEmail(), "<h1>Bienvenido a caseStudy Store!</h1>");
 		return u;
 	}
 
 	@Override
+	@Transactional
 	public Usuario editar(String id, EditarUsuario u) {
 		Usuario user = listarUno(id);
 		if (user == null)
@@ -97,6 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public Usuario eliminar(String id) {
 		Usuario usuario = listarUno(id);
 		if (usuario == null)
@@ -106,11 +110,12 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public boolean existeCorreo(String correo) {
 		return repository.findByEmailIgnoreCase(correo) != null;
 	}
 
-	@Override
+	@Override@Transactional(readOnly = true)
 	public boolean existeUsername(String username) {
 		return repository.findByUsernameIgnoreCase(username) != null;
 	}
@@ -132,11 +137,13 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Usuario buscarPorUsuario(String username) {
 		return repository.findByUsernameIgnoreCase(username);
 	}
 
 	@Override
+	@Transactional
 	public Usuario editarLogin(String id, Usuario usuario) {
 		Usuario user = listarUno(id);
 		if (user == null)
@@ -147,6 +154,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public Usuario editarRoles(Usuario usuario, String id) {
 		Usuario user = repository.findById(id).orElse(null);
 		if (user != null) {

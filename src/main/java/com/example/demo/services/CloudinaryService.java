@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.cloudinary.Cloudinary;
@@ -32,14 +33,14 @@ public class CloudinaryService implements ImagenService{
 		valuesMap.put("api_secret", "F2kO0PdCt6Vl6Tu9g-GWUgJYV5w");
 		cloudinary = new Cloudinary(valuesMap);
 	}
-
+	@Transactional
 	public RespuestaDto eliminarI(String id) {
 		try {
 			cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
-			return new RespuestaDto(true, "Se Elimino de la imagen sin problema",null,null,null,null,null);
+			return new RespuestaDto(true, "Eminación de la imagen sin problema",null,null,null,null,null,null);
 		} catch (Exception e) {
 			log.error("Error al eliminar la imagen ", e.getLocalizedMessage());
-			return new RespuestaDto(false, e.getMessage(),null,null,null,null,null);
+			return new RespuestaDto(false, e.getMessage(),null,null,null,null,null,null);
 		}
 	}
 
