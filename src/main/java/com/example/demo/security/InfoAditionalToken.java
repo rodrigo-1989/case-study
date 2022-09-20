@@ -11,19 +11,19 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.entity.Usuario;
-import com.example.demo.services.UsuarioService;
+import com.example.demo.repository.UsuarioRepository;
 
 
 @Component
 public class InfoAditionalToken implements TokenEnhancer {
 
 	@Autowired
-	private UsuarioService usuarioService;
+	private UsuarioRepository repository;
 
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-		Map<String, Object> info = new HashMap<String, Object>();
-		Usuario usuario = usuarioService.buscarPorUsuario(authentication.getName());
+		Map<String, Object> info = new HashMap<>();
+		Usuario usuario = repository.findByUsernameIgnoreCase(authentication.getName());
 		info.put("nombre", usuario.getName());
 		info.put("usuario", usuario.getUsername());
 		info.put("imagen", usuario.getImage());

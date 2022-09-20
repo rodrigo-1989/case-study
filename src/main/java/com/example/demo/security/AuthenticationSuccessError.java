@@ -10,14 +10,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.entity.Usuario;
-import com.example.demo.services.UsuarioService;
+import com.example.demo.repository.UsuarioRepository;
 
 @Component
 public class AuthenticationSuccessError implements AuthenticationEventPublisher {
 
 	private Logger log = LoggerFactory.getLogger(AuthenticationSuccessError.class);
 	@Autowired
-	private UsuarioService service;
+	private UsuarioRepository repository;
 	@Override
 	public void publishAuthenticationSuccess(Authentication authentication) {
 		
@@ -25,9 +25,9 @@ public class AuthenticationSuccessError implements AuthenticationEventPublisher 
 			return;
 		
 		log.info("*****Usuario autenticado***** "+authentication.getName());
-		Usuario usuario = service.buscarPorUsuario(authentication.getName());
+		Usuario usuario = repository.findByUsernameIgnoreCase(authentication.getName());
 		usuario.setIntentos(0);
-		service.editarLogin(usuario.getId(), usuario);
+		repository.save(usuario);
 		
 	}
 
@@ -36,14 +36,13 @@ public class AuthenticationSuccessError implements AuthenticationEventPublisher 
 		log.error("Error, en el login "+exception.getMessage());
 		
 		try {
-			Usuario usuario = service.buscarPorUsuario(authentication.getName());
+			Usuario usuario = repository.findByUsernameIgnoreCase(authentication.getName());
 			usuario.setIntentos(usuario.getIntentos()+1);
 			if(usuario.getIntentos() >= 3) {				
 				usuario.setEnabled(false);
 				log.info(String.format("El usuario %s se desabilito por ecceder los intentos" ,usuario.getName()) );
 			}
-			
-			service.editarLogin(usuario.getId(),usuario);
+			repository.save(usuario);
 		} catch (Exception e) {
 			log.error(String.format("El usuario %s NO existe en el sistema " , authentication.getName()));
 		}

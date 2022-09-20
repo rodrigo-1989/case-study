@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,12 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Document( "usuarios")
+@Document("usuarios")
 public class Usuario {
 
 	private String id;
@@ -25,8 +24,16 @@ public class Usuario {
 	private int intentos;
 	private Date createAt;
 	private boolean enabled;
-	private List<String>roles;
-	
+	private List<String> roles;
+
 	@Transient
 	private String IdImage;
+
+	public Usuario() {
+		this.roles = new ArrayList<>();
+	}
+
+	public void addRol(String rol) {
+		this.roles.add(rol);
+	}
 }

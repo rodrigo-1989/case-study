@@ -45,8 +45,8 @@ public class ProductoServiceImpl implements ProductoService {
 	public RespuestaDto listarTodos() {
 		List<Producto> productos = repository.findAll();
 		return (!productos.isEmpty())
-				? new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null, null)
-				: new RespuestaDto(false, "Ningun producto encontrado", null, null, null, null, null, null);
+				? new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null, null,null)
+				: new RespuestaDto(false, "Ningun producto encontrado", null, null, null, null, null, null,null);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class ProductoServiceImpl implements ProductoService {
 	public RespuestaDto listarUno(String id) {
 		Producto producto = repository.findById(id).orElse(null);
 		return (producto != null)
-				? new RespuestaDto(true, "Producto encontrado", null, producto, null, null, null, null)
-				: new RespuestaDto(false, "El producto que buscas no existe", null, null, null, null, null, null);
+				? new RespuestaDto(true, "Producto encontrado", null, producto, null, null, null, null,null)
+				: new RespuestaDto(false, "El producto que buscas no existe", null, null, null, null, null, null,null);
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class ProductoServiceImpl implements ProductoService {
 		List<Producto> productos = repository.findByNombreContainingIgnoreCase(nombre);
 		if (productos.isEmpty())
 			return new RespuestaDto(false, String.format("No hay productos parecidos con el temino: %s", nombre), null,
-					null, null, null, null, null);
-		return new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null, null);
+					null, null, null, null, null,null);
+		return new RespuestaDto(true, "Productos encontrados", productos, null, null, null, null, null,null);
 	}
 
 	@Override
@@ -100,10 +100,10 @@ public class ProductoServiceImpl implements ProductoService {
 			Producto p = repository.findByNombre(producto.getNombre());
 			if (p == null || id.equals(prod.getProducto().getId()))
 				return edit(prod, producto, id);
-			return new RespuestaDto(false, "El producto ya existe en BD", null, null, null, null, null, null);
+			return new RespuestaDto(false, "El producto ya existe en BD", null, null, null, null, null, null,null);
 		} else {
 			return new RespuestaDto(false, String.format("El producto con id:%s No existe", id), null, null, null, null,
-					null, null);
+					null, null,null);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class ProductoServiceImpl implements ProductoService {
 		prod.getProducto().setExistentes(
 				(producto.getExistentes() >= 0) ? producto.getExistentes() : prod.getProducto().getExistentes());
 		return new RespuestaDto(true, "Producto editado", null, repository.save(prod.getProducto()), null, null, null,
-				null);
+				null,null);
 	}
 
 	@Override
@@ -139,10 +139,10 @@ public class ProductoServiceImpl implements ProductoService {
 				cloudinary.eliminarI(imagen.getImagenId());
 
 			iRepository.deleteById(imagen.getId());
-			return new RespuestaDto(true, "Producto eliminado :(", null, null, null, null, null, null);
+			return new RespuestaDto(true, "Producto eliminado :(", null, null, null, null, null, null,null);
 		} else {
 			return new RespuestaDto(false, String.format("El id:%s del producto No existe", id), null, null, null, null,
-					null, null);
+					null, null,null);
 		}
 	}
 
@@ -152,8 +152,8 @@ public class ProductoServiceImpl implements ProductoService {
 		List<String> errores = procesarCompra(lista);
 		return (!errores.isEmpty())
 				? new RespuestaDto(false, "Uno o mas produtos no existen en BD ó son insuficientes", null, null,
-						errores, null, null, null)
-				: new RespuestaDto(true, "Todos los productos fueron actualizados", null, null, null, null, null, null);
+						errores, null, null, null,null)
+				: new RespuestaDto(true, "Todos los productos fueron actualizados", null, null, null, null, null, null,null);
 	}
 
 	@Override
@@ -203,11 +203,11 @@ public class ProductoServiceImpl implements ProductoService {
 			return (!errores.isEmpty())
 					? new RespuestaDto(false,
 							"Una o mas compras no se pudieron comprar, es posible que no se cuente con unidades sufucientes", null, null,
-							errores, null, null, null)
-					: new RespuestaDto(true, "Felicidades por tu compra", null, null, null, null, null, null);
+							errores, null, null, null,null)
+					: new RespuestaDto(true, "Felicidades por tu compra", null, null, null, null, null, null,null);
 		}
 		return new RespuestaDto(false, "El Usuario que intenta hacer la compra no existe", null, null, null, null, null,
-				null);
+				null,null);
 	}
 
 	private void registrarPedido(Pedido pedido, String id) {

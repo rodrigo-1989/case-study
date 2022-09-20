@@ -21,6 +21,10 @@ public class PedidoController {
 	public RespuestaDto listar() {
 		return service.pedidos();
 	}
+	@GetMapping("/detalle/{id}")
+	public RespuestaDto verDetallePedido(@PathVariable String id) {
+		return service.pedidoDetallado(id);
+	}
 	
 	@PutMapping("/{id}")
 	public RespuestaDto entregarPedido(@PathVariable String id) {

@@ -23,5 +23,6 @@ public class RespuestaDto {
 	private List<Usuario> usuarios;
 	private Usuario usuario;
 	private List<Pedido> pedidos;
+	private Pedido pedido;
 	
 }

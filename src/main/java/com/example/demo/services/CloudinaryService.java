@@ -37,10 +37,10 @@ public class CloudinaryService implements ImagenService{
 	public RespuestaDto eliminarI(String id) {
 		try {
 			cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
-			return new RespuestaDto(true, "Eminación de la imagen sin problema",null,null,null,null,null,null);
+			return new RespuestaDto(true, "Eminación de la imagen sin problema",null,null,null,null,null,null,null);
 		} catch (Exception e) {
 			log.error("Error al eliminar la imagen ", e.getLocalizedMessage());
-			return new RespuestaDto(false, e.getMessage(),null,null,null,null,null,null);
+			return new RespuestaDto(false, e.getMessage(),null,null,null,null,null,null,null);
 		}
 	}
 
