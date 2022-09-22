@@ -214,7 +214,7 @@ public class ProductoServiceImpl implements ProductoService {
 		pedido.setUsuarioId(id);
 		pedido.setFechaCompra(new Date());
 		pedido.setUsuarioId(pedido.getUsuarioId());
-		pedido.setStatus(true);
+		pedido.setStatus("PENDIENTE");
 	}
 
 	private List<String> procesarVenta(List<CVProductos> lista, Pedido pedido) {

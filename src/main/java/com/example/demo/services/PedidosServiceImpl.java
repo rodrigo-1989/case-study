@@ -30,17 +30,25 @@ public class PedidosServiceImpl implements PedidosService{
 	public RespuestaDto pedidos() {
 		RespuestaDto respuesta = new RespuestaDto();
 		respuesta.setOk(true);
-		respuesta.setPedidos(repository.findByStatusIsTrue());
+		respuesta.setPedidos(repository.findAll().stream().filter(p -> "PENDIENTE".equals(p.getStatus())).collect(Collectors.toList()));
+		return respuesta;
+	}
+	@Override
+	@Transactional(readOnly = true)
+	public RespuestaDto pedidosPorUsuario(String id) {
+		RespuestaDto respuesta = new RespuestaDto();
+		respuesta.setOk(true);
+		respuesta.setPedidos(repository.findAllByUsuarioId(id));
 		return respuesta;
 	}
 
 	@Override
 	@Transactional
-	public RespuestaDto entragaPedido(String id) {
+	public RespuestaDto entragarPedido(String id) {
 		Pedido pedido = repository.findById(id).orElse(null);
 		if(pedido == null) 
 			return new RespuestaDto(false,"El id del pedido no existe",null,null,null,null,null,null,null);
-		pedido.setStatus(false);
+		pedido.setStatus("ENTREGADO");
 		repository.save(pedido);
 		return new RespuestaDto(true,"Pedido entregado",null,null,null,null,null,null,null);
 	}
@@ -59,6 +67,16 @@ public class PedidosServiceImpl implements PedidosService{
 		respuesta.setProductos((List<Producto>) pRepository.findAllById(idLista));
 		return respuesta;
 	}
+	@Override
+	public RespuestaDto cancelarPedido(String id) {
+		Pedido pedido = repository.findById(id).orElse(null);
+		if(pedido == null) 
+			return new RespuestaDto(false,"El id del pedido no existe",null,null,null,null,null,null,null);
+		pedido.setStatus("CANCELADO");
+		repository.save(pedido);
+		return new RespuestaDto(true,"Pedido Cancelado",null,null,null,null,null,null,null);
+	}
+
 
 
 }

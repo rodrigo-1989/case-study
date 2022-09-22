@@ -21,6 +21,10 @@ public class PedidoController {
 	public RespuestaDto listar() {
 		return service.pedidos();
 	}
+	@GetMapping("/pedidosPorUsuario/{id}")
+	public RespuestaDto pedidosPorUsusario(@PathVariable String id) {
+		return service.pedidosPorUsuario(id);
+	}
 	@GetMapping("/detalle/{id}")
 	public RespuestaDto verDetallePedido(@PathVariable String id) {
 		return service.pedidoDetallado(id);
@@ -28,6 +32,11 @@ public class PedidoController {
 	
 	@PutMapping("/{id}")
 	public RespuestaDto entregarPedido(@PathVariable String id) {
-		return service.entragaPedido(id);
+		return service.entragarPedido(id);
+	}
+	
+	@PutMapping("cancelar/{id}")
+	public RespuestaDto acncelarPedido(@PathVariable String id) {
+		return service.cancelarPedido(id);
 	}
 }

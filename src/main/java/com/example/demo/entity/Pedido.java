@@ -21,7 +21,7 @@ public class Pedido {
 	private List<CVProductos> listaCompra;
 	private Date fechaCompra;
 	private double total;
-	private boolean status;
+	private String status;
 
 	public Pedido() {
 		this.listaCompra = new ArrayList<>();

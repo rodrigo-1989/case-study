@@ -8,5 +8,5 @@ import com.example.demo.entity.Pedido;
 
 public interface PedidoRepository extends MongoRepository<Pedido, String>{
 
- 	List<Pedido> findByStatusIsTrue();
+ 	List<Pedido> findAllByUsuarioId(String id);
 }
