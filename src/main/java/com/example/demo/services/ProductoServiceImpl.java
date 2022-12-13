@@ -32,8 +32,8 @@ public class ProductoServiceImpl implements ProductoService {
 	private PedidoRepository pRepository;
 	@Autowired
 	private CloudinaryService cloudinary;
-	@Autowired
-	private CorreoService correo;
+//	@Autowired
+//	private CorreoService correo;
 	@Value("${url.image.noproducto}")
 	private String noImagenProductoUrl;
 	@Value("${url.idnoproducto}")
@@ -198,7 +198,9 @@ public class ProductoServiceImpl implements ProductoService {
 			msgCorreo.append("</ul><hr>");
 			pedido.crearTotal();
 			msgCorreo.append("<div>Total:<b>$ "+pedido.getTotal()+"</b></div>");
-			correo.sendEmail(u.getEmail(), msgCorreo.toString());
+			CorreoService correo = new CorreoService(u.getEmail(), msgCorreo.toString());
+			correo.start();
+//			correo.sendEmail(u.getEmail(), msgCorreo.toString());
 			pRepository.save(pedido);
 			return (!errores.isEmpty())
 					? new RespuestaDto(false,

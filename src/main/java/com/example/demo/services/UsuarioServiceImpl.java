@@ -42,8 +42,8 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 	private CloudinaryService cloudinary;
 	@Autowired
 	private BCryptPasswordEncoder encoder;
-	@Autowired
-	private CorreoService correo;
+//	@Autowired
+//	private CorreoService correo;
 
 	@Value("${url.image.nousuario}")
 	private String noImagenUsuarioUrl;
@@ -83,7 +83,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 		Usuario u = repository.save(usuario);
 		Imagen imagen = new Imagen(u.getName() + ".jpeg", u.getImage(), noImagenIdUsuario, u.getId(), null);
 		iRepository.save(imagen);
-		correo.sendEmail(u.getEmail(), "<h1>Bienvenido a CaseStudy Store!</h1>");
+		CorreoService correo = new CorreoService(u.getEmail(), "<h1>Bienvenido a CaseStudy Store!</h1>");
+		correo.start();
+//		correo.sendEmail(u.getEmail(), "<h1>Bienvenido a CaseStudy Store!</h1>");
 		return new RespuestaDto(true, String.format("Usuario %s creado con exito", u.getName()), null, null, null, null,
 				u, null, null);
 	}
